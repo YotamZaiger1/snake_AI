@@ -3,11 +3,6 @@ package Game;
 import java.util.HashSet;
 
 public interface InputSystem {
-    byte NORTH = 0;
-    byte SOUTH = 1;
-    byte EAST = 2;
-    byte WEST = 3;
-
     byte PAUSE = 10;
     byte EXIT = 11;
     byte RESET = 13;
@@ -16,7 +11,7 @@ public interface InputSystem {
     /**
      * Get a direction to move a given {@code snake} to. Based on its current state.
      * @param snake The {@code Game.Snake} instance.
-     * @return One of: {@code NORTH, SOUTH, EAST, WEST}.
+     * @return One of: {@code Snake.NORTH, Snake.SOUTH, Snake.EAST, Snake.WEST}.
      */
     byte getDirection(Snake snake);
 

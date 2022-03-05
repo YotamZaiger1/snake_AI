@@ -7,18 +7,18 @@ import java.util.HashSet;
 
 public class KeyboardHandler implements InputSystem, KeyListener {
     private final HashSet<Integer> keysPressedID = new HashSet<>();
-    private byte direction = NORTH;
+    private byte direction = Snake.NORTH;
 
     @Override
     public byte getDirection(Snake snake) {
         if (keysPressedID.contains(KeyEvent.VK_RIGHT)) {
-            direction = EAST;
+            direction = Snake.EAST;
         } else if (keysPressedID.contains(KeyEvent.VK_LEFT)) {
-            direction = WEST;
+            direction = Snake.WEST;
         } else if (keysPressedID.contains(KeyEvent.VK_UP)) {
-            direction = NORTH;
+            direction = Snake.NORTH;
         } else if (keysPressedID.contains(KeyEvent.VK_DOWN)) {
-            direction = SOUTH;
+            direction = Snake.SOUTH;
         }
         return direction;
     }
@@ -27,13 +27,13 @@ public class KeyboardHandler implements InputSystem, KeyListener {
     public HashSet<Byte> getInputs(Snake snake) {
         HashSet<Byte> keys = new HashSet<>();
         if (keysPressedID.contains(KeyEvent.VK_P)) {
-            keys.add(PAUSE);
+            keys.add(InputSystem.PAUSE);
         } else if (keysPressedID.contains(KeyEvent.VK_ESCAPE)) {
-            keys.add(EXIT);
+            keys.add(InputSystem.EXIT);
         } else if (keysPressedID.contains(KeyEvent.VK_R)) {
-            keys.add(RESET);
+            keys.add(InputSystem.RESET);
         } else if (keysPressedID.contains(KeyEvent.VK_H)) {
-            keys.add(HELP);
+            keys.add(InputSystem.HELP);
         }
 
         return keys;

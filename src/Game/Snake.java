@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Snake {
+    public static final byte NORTH = 0;
+    public static final byte SOUTH = 1;
+    public static final byte EAST = 2;
+    public static final byte WEST = 3;
+
     final Pair boardSize;
 
     int turnsAlive;
@@ -46,10 +51,10 @@ public class Snake {
 
         int addX = 0, addY = 0;
         switch (direction) {
-            case InputSystem.NORTH -> addY = +1;
-            case InputSystem.SOUTH -> addY = -1;
-            case InputSystem.EAST -> addX = +1;
-            case InputSystem.WEST -> addX = -1;
+            case NORTH -> addY = +1;
+            case SOUTH -> addY = -1;
+            case EAST -> addX = +1;
+            case WEST -> addX = -1;
         }
 
         Pair new_pos = new Pair(headPos.x + addX, headPos.y + addY);
@@ -101,7 +106,8 @@ public class Snake {
     }
 
     public HashSet<Pair> getEmptySpace() {
-        return (HashSet) emptySpace.clone();
+        // Insecure! Making a copy causes thread-synchronization exceptions.
+        return emptySpace;
     }
 
     public ArrayList<Pair> getSnakeIn() {
