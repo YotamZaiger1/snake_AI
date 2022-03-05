@@ -13,10 +13,6 @@ public interface InputSystem {
     byte RESET = 13;
     byte HELP = 12;
 
-    /** Initialize the input system.
-     */
-    void initialize();
-
     /**
      * Get a direction to move a given {@code snake} to. Based on its current state.
      * @param snake The {@code Game.Snake} instance.

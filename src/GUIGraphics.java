@@ -1,9 +1,11 @@
 import Game.GraphicSystem;
+import Game.InputSystem;
 import Game.Pair;
 import Game.Snake;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyListener;
 import java.util.HashSet;
 
 public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
@@ -16,13 +18,21 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     private Pair tileSize;
     private final JFrame window = new JFrame();
 
+    private final InputSystem inputSystem;
 
-    public GUIGraphics(int screenWidth, int screenHeight) {
+
+    public GUIGraphics(int screenWidth, int screenHeight, InputSystem inputSystem) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
-        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+        this.inputSystem = inputSystem;
+        if (inputSystem instanceof KeyListener) {
+            // initiate the KeyListener if has one
+            this.addKeyListener((KeyListener) inputSystem);
+        }
 
+        this.setFocusable(true);  // important for the KeyListener
+        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
     }
@@ -54,7 +64,7 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
 
         for (int i = 0; i < boardWidth; i++) {
             for (int j = 0; j < boardHeight; j++) {
-                Pair pos = new Pair(i, j);
+                Pair pos = new Pair(i, boardHeight - j - 1);  // flip y axis to fixed the original flip
                 if (!emptySpace.contains(pos)) {
                     if (pos.equals(gameSnake.getHeadPos())) {
                         g2D.setColor(Color.lightGray); // snake head
@@ -91,6 +101,8 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
 
     @Override
     public void update() {
+        // The snake is being updated anyway with the `setSnake` function.
+        // No more actions are necessary.
     }
 
     @Override
@@ -105,4 +117,7 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
         return gameThread != null;
     }
 
+    public InputSystem getInputSystem() {
+        return inputSystem;
+    }
 }

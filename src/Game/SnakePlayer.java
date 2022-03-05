@@ -8,7 +8,6 @@ public class SnakePlayer implements Runnable {
     Snake snake;
     InputSystem inputSystem;
     GraphicSystem graphicSystem;
-    private boolean isGamePaused = false;
 
     public SnakePlayer(int sizeX, int sizeY, long milliDelay, InputSystem inputSystem, GraphicSystem graphicSystem) {
         this(new Snake(sizeX, sizeY), milliDelay, inputSystem, graphicSystem);
@@ -24,22 +23,19 @@ public class SnakePlayer implements Runnable {
 
     @Override
     public void run() {
-        inputSystem.initialize();
         graphicSystem.setSnake(snake);
         graphicSystem.initialize();
         while (snake.getIsAlive()) {
             HashSet<Byte> inputs = inputSystem.getInputs(snake);
             if (inputs != null) {
                 if (inputs.contains(InputSystem.EXIT)) break;
-                if (inputs.contains(InputSystem.PAUSE)) {
-                    isGamePaused = !isGamePaused;
-                }
+
                 if (inputs.contains(InputSystem.HELP)) inputSystem.printHelpMessage();
                 if (inputs.contains(InputSystem.RESET)) {
                     snake = new Snake(snake.boardSize);
                     graphicSystem.setSnake(snake);
                 }
-                if (isGamePaused) continue;
+                if (inputs.contains(InputSystem.PAUSE)) continue;
             }
 
             byte direction = inputSystem.getDirection(snake);

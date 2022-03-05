@@ -6,15 +6,14 @@ public interface GraphicSystem {
     void initialize();
 
     /**
-     * Update graphics due to changes in the game.
+     * Called after each snake turn. May be used to update graphics due to changes in the game.
      **/
     void update();
 
     void setSnake(Snake snake);
 
     /**
-     * Return if the graphic is still running.
-     * @return if the graphic is still running.
+     * @return if the graphic is still alive and running.
      */
     boolean getIsGraphicOn();
 }
