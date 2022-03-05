@@ -1,12 +1,14 @@
-import Game.GraphicSystem;
+package RunGame;
+
 import Game.Pair;
+import Game.Player;
 import Game.Snake;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashSet;
 
-public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
+public class GuiPlayer extends JPanel implements Runnable, Player {
 
     final int screenWidth;
     final int screenHeight;
@@ -17,7 +19,7 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     private final JFrame window = new JFrame();
 
 
-    public GUIGraphics(int screenWidth, int screenHeight) {
+    public GuiPlayer(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
@@ -32,6 +34,23 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
             return "Snake Game (" + gameSnake.getSize() + ")";
         }
         return "Snake Game (" + gameSnake.getSize() + ") - Game Over";
+    }
+
+    @Override
+    public void initialize() {
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setResizable(false);
+        window.setTitle(getTitleMessage(gameSnake.getIsAlive()));
+
+        window.add(this);
+        window.addKeyListener(new KeyboardHandler());
+        window.pack();
+
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
+
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 
     @Override
@@ -73,24 +92,36 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     }
 
     @Override
-    public void initialize() {
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.setTitle(getTitleMessage(gameSnake.getIsAlive()));
+    public byte getDirection() {
+        return 0;
+    }
 
-        window.add(this);
-        window.addKeyListener(new KeyboardHandler());
-        window.pack();
+    @Override
+    public HashSet<Byte> getInputs() {
+        return null;
+    }
 
-        window.setLocationRelativeTo(null);
-        window.setVisible(true);
+    @Override
+    public void printHelpMessage() {
+        final String message = """
+                Keys:
+                \t[UP]: move up.
+                \t[DOWN]: move down.
+                \t[RIGHT]: move right.
+                \t[LEFT]: move left.
 
-        gameThread = new Thread(this);
-        gameThread.start();
+                \t[P]: pause the game. Press again to continue.
+                \t[ESC]: exit the game.
+                \t[R]: restart the game.
+                \t[H]: print this help menu.
+                """;
+        System.out.println(message);
     }
 
     @Override
     public void update() {
+        // The snake is being updated anyway with the `setSnake` function.
+        // No more actions are necessary.
     }
 
     @Override
@@ -101,7 +132,7 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     }
 
     @Override
-    public boolean getIsGraphicOn() {
+    public boolean isAlive() {
         return gameThread != null;
     }
 

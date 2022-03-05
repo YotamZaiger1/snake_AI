@@ -11,7 +11,7 @@ public class Snake {
     boolean isAlive = true;
     ArrayList<Pair> snakeIn = new ArrayList<>();
     HashSet<Pair> emptySpace = new HashSet<>();
-    Pair headPos;
+    Pair headPos;  // TODO: replace `Pair` with `Point`.
 
     Pair foodPos;
     boolean justAte;
@@ -46,10 +46,10 @@ public class Snake {
 
         int addX = 0, addY = 0;
         switch (direction) {
-            case InputSystem.NORTH -> addY = +1;
-            case InputSystem.SOUTH -> addY = -1;
-            case InputSystem.EAST -> addX = +1;
-            case InputSystem.WEST -> addX = -1;
+            case Player.NORTH -> addY = +1;
+            case Player.SOUTH -> addY = -1;
+            case Player.EAST -> addX = +1;
+            case Player.WEST -> addX = -1;
         }
 
         Pair new_pos = new Pair(headPos.x + addX, headPos.y + addY);

@@ -1,8 +1,12 @@
-import Game.GraphicSystem;
+package RunGame;
+
 import Game.Pair;
+import Game.Player;
 import Game.Snake;
 
-public class AsciiGraphic implements GraphicSystem {
+import java.util.HashSet;
+
+public class AsciiGraphic implements Player {
     private Snake snake;
 
     @Override
@@ -11,12 +15,27 @@ public class AsciiGraphic implements GraphicSystem {
     }
 
     @Override
-    public boolean getIsGraphicOn() {
+    public boolean isAlive() {
         return true;
     }
 
     @Override
     public void initialize() {
+    }
+
+    @Override
+    public byte getDirection() {
+        return 0;
+    }
+
+    @Override
+    public HashSet<Byte> getInputs() {
+        return null;
+    }
+
+    @Override
+    public void printHelpMessage() {
+
     }
 
     @Override
