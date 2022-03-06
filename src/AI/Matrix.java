@@ -7,6 +7,9 @@ public class Matrix {
     private final double[][] values;
 
     public Matrix(int rows, int cols) {
+        if (rows < 0 || cols < 0) {
+            throw new RuntimeException("Matrix dimensions must be positive.");
+        }
         this.rows = rows;
         this.cols = cols;
 
@@ -47,7 +50,7 @@ public class Matrix {
     /**
      * create and return a random {@code rows}-by-{@code cols} matrix with values between 0 and 1.
      */
-    public static Matrix random(int rows, int cols) {
+    public static Matrix randomMatrix(int rows, int cols) {
         Matrix matrix = new Matrix(rows, cols);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
