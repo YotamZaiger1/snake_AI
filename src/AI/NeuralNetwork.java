@@ -37,15 +37,6 @@ public class NeuralNetwork {
         this.outputVector = new Matrix(layerSizes[layerSizes.length - 1], 1);
     }
 
-    @Override
-    public String toString(){
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Matrix matrix: wights) {
-            stringBuilder.append(matrix.toString()).append("\n\n");
-        }
-        return stringBuilder.toString();
-    }
-
     private double activationFunction(double x){
         if (x < 0) return 0d;
         return x;
@@ -69,5 +60,26 @@ public class NeuralNetwork {
             }
         }
         return maxIndex;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Matrix matrix: wights) {
+            stringBuilder.append(matrix.toString()).append("\n\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    public Matrix[] getWights() {
+        return wights.clone();
+    }
+
+    public Matrix getOutputVector() {
+        return outputVector.clone();
+    }
+
+    public int[] getLayerSizes() {
+        return layerSizes.clone();
     }
 }

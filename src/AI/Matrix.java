@@ -26,11 +26,6 @@ public class Matrix {
         }
     }
 
-    public Matrix(Matrix matrix){
-        this(matrix.values);
-    }
-
-
     public static void assertDimensionsAdd(Matrix A, Matrix B){
         if (A.rows != B.rows || A.cols != B.cols) throw new RuntimeException("Invalid dimensions.");
     }
@@ -48,13 +43,13 @@ public class Matrix {
     }
 
     /**
-     * create and return a random {@code rows}-by-{@code cols} matrix with values between 0 and 1.
+     * create and return a random {@code rows}-by-{@code cols} matrix with values between -1 and 1.
      */
     public static Matrix randomMatrix(int rows, int cols) {
         Matrix matrix = new Matrix(rows, cols);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                matrix.values[i][j] = Math.random();
+                matrix.values[i][j] = (Math.random() - 0.5)*2;  // random number between -1 and 1
             }
         }
         return matrix;
@@ -119,5 +114,9 @@ public class Matrix {
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    public Matrix clone(){
+        return new Matrix(values);
     }
 }
