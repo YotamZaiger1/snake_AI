@@ -77,7 +77,7 @@ public class Snake {
             turnsAlive++;
         }
 
-        // chek if ate food
+        // check if ate food
         if (new_pos.equals(foodPos)) {
             justAte = true;
             foodPos = Helpers.randomChoice(emptySpace);
