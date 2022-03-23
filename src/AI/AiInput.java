@@ -33,33 +33,57 @@ public class AiInput implements InputSystem {
     @Override
     public byte getDirection(Snake snake) {
         // TODO: FINISH!
-        Matrix inputVector = calcInputs(snake);
+        Matrix inputVector = calcInputVector(snake);
         int prediction = neuralNetwork.predict(inputVector);
+        return (byte) prediction;
     }
 
     // TODO: continue... calculate more inputs!
-    private Matrix calcInputs(Snake snake){
+    private Matrix calcInputVector(Snake snake){
         Matrix inputVector = new Matrix(25, 1);
 
         Pair foodPos = snake.getFoodPos();
         Pair headPos = snake.getHeadPos();
-        // is food in 8 directions:
-        for (int i = 0; i < ALL_DIRECTIONS.length; i++) {
-            if (isPointOnVector(foodPos, headPos, ALL_DIRECTIONS[i]))
+
+        /*
+        Is food in 8 directions:
+        In rotations of 45 degrees, starting with the snake current direction,
+        if there is food in the direction- 1, else- 0.
+        */
+        int startDirection;
+        switch (currentDirection){  // according to ALL_DIRECTIONS order
+            case Snake.NORTH -> startDirection = 0;
+            case Snake.EAST -> startDirection = 2;
+            case Snake.SOUTH -> startDirection = 4;
+            case Snake.WEST -> startDirection = 6;
+            default -> throw new IllegalStateException("Unexpected value: " + currentDirection);
+        }
+
+        for (int i = 0; i < 8; i++) {  // ALL_DIRECTIONS length
+            Pair direction = ALL_DIRECTIONS[(i + startDirection) % ALL_DIRECTIONS.length];
+            if (isPointOnVector(foodPos, headPos, direction))
                 inputVector.setXY(i, 0, 1);
             else
                 inputVector.setXY(i, 0, 0);
         }
 
+        /*
+        The next value will be the angle between the head and the food.
+         */
+        Pair directionVector = ALL_DIRECTIONS[startDirection];  // the direction-vector which the snake currently looks to
+        Pair foodTranslation = new Pair(foodPos.x - headPos.x, foodPos.y - headPos.y);  // redefine the origin to be the snake's head position
+        double angle = directionVector.angle(foodTranslation);
+        inputVector.setXY(9, 0, angle);
+
+
 
         return inputVector;
     }
 
-    //TODO: check if works
     /**
-     * Checks if a given point seats on the line that made by a direction vector and a origin.
+     * Checks if a given point seats on the line that made by a direction vector and started at {@code origin}.
      */
-    private boolean isPointOnVector(Pair point, Pair origin, Pair directionVector){
+    private static boolean isPointOnVector(Pair point, Pair origin, Pair directionVector){
         float pointX = point.x - origin.x;
         float pointY = point.y - origin.y;
         float vectorX = directionVector.x;

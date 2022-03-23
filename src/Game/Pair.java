@@ -23,6 +23,19 @@ public class Pair {
         return this.x == x && this.y == y;
     }
 
+    public int dotProd(Pair o){
+        return this.x * o.x + this.y + o.y;
+    }
+
+    /**
+     * @return The angle between {@code this} and {@code o}.
+     */
+    public double angle(Pair o){
+        double norm = Math.sqrt(this.dotProd(this) * o.dotProd(o));
+        double cosAngle = ((double) this.dotProd(o)) / norm;
+        return Math.acos(cosAngle);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
