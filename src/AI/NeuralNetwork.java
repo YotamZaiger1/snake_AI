@@ -2,6 +2,7 @@ package AI;
 
 public class NeuralNetwork {
     private final Matrix[] wights;
+    private final Matrix[] biases;
     private final int[] layerSizes;
 
     private Matrix outputVector;
@@ -13,18 +14,21 @@ public class NeuralNetwork {
 
         this.layerSizes = layerSizes;
         this.wights = new Matrix[layerSizes.length - 1];
+        this.biases = new Matrix[layerSizes.length - 1];
         for (int i = 0; i < layerSizes.length - 1; i++) {
             this.wights[i] = Matrix.randomMatrix(layerSizes[i + 1], layerSizes[i]);
+            this.biases[i] = Matrix.randomMatrix(layerSizes[i], 1);
         }
         this.outputVector = new Matrix(layerSizes[layerSizes.length - 1], 1);
     }
 
-    public NeuralNetwork(Matrix... wights){
-        if (wights == null || wights.length == 0) {
-            throw new RuntimeException("Wights must contain at least 1 matrix.");
+    public NeuralNetwork(Matrix[] wights, Matrix[] biases){
+        if (wights == null || wights.length == 0 || biases == null || biases.length != wights.length) {
+            throw new RuntimeException("Wights must contain at least 1 matrix. And biases must match wights length.");
         }
 
         this.wights = wights;
+        this.biases = biases;
         this.layerSizes = new int[wights.length + 1];
         this.layerSizes[0] = wights[0].cols;
 
@@ -42,8 +46,16 @@ public class NeuralNetwork {
         return x;
     }
 
+    /**
+     * @return The index of the maximum output according to an input-vector.
+     * Also the output-vector is being stored at {@code this.outputVector}.
+     */
     public int predict(Matrix inputVector){
-        for (Matrix wight : wights) {
+        // TODO: check if works
+        for (int i = 0; i < wights.length; i++) {
+            inputVector = inputVector.plus(biases[i]);
+
+            Matrix wight = wights[i];
             inputVector = wight.mul(inputVector);
             for (int j = 0; j < inputVector.cols; j++) {
                 inputVector.setXY(j, 0, activationFunction(inputVector.getXY(j, 0)));
@@ -60,6 +72,13 @@ public class NeuralNetwork {
             }
         }
         return maxIndex;
+    }
+
+    public void mutate(double mutationRate, double mutationStrength){
+        for (int i = 0; i < wights.length; i++) {
+            wights[i].mutate(mutationRate, mutationStrength);
+            biases[i].mutate(mutationRate, mutationStrength);
+        }
     }
 
     /**

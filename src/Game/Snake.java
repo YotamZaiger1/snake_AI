@@ -1,5 +1,7 @@
 package Game;
 
+import Main.Utils;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -21,11 +23,19 @@ public class Snake {
     Pair foodPos;
     boolean justAte;
 
-    public Snake(Pair boardSize) {
-        this(boardSize.x, boardSize.y);
+    public Snake(int sizeX, int sizeY){
+        this(sizeX, sizeY, 4);
     }
 
-    public Snake(int sizeX, int sizeY) {
+    public Snake(Pair boardSize){
+        this(boardSize, 4);
+    }
+
+    public Snake(Pair boardSize, int startSize) {
+        this(boardSize.x, boardSize.y, startSize);
+    }
+
+    public Snake(int sizeX, int sizeY, int startSize) {
         if (sizeX > 1 && sizeY > 1) {
             this.boardSize = new Pair(sizeX, sizeY);
         } else {
@@ -43,7 +53,11 @@ public class Snake {
             }
         }
 
-        foodPos = Helpers.randomChoice(emptySpace);
+        foodPos = Utils.randomChoice(emptySpace);
+        for (int i = 0; i < startSize - 1; i++) {
+            justAte = true;
+            moveDirection(NORTH);
+        }
     }
 
     public void moveDirection(byte direction) {
@@ -80,7 +94,7 @@ public class Snake {
         // check if ate food
         if (new_pos.equals(foodPos)) {
             justAte = true;
-            foodPos = Helpers.randomChoice(emptySpace);
+            foodPos = Utils.randomChoice(emptySpace);
         }
     }
 

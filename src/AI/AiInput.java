@@ -6,17 +6,10 @@ import Game.Snake;
 
 import java.util.HashSet;
 
+import static AI.Evolution.ALL_DIRECTIONS;
+
 public class AiInput implements InputSystem {
-    private static final Pair[] ALL_DIRECTIONS = new Pair[]{
-            new Pair(0, 1),
-            new Pair(1,1),
-            new Pair(1,0),
-            new Pair(1,-1),
-            new Pair(0,-1),
-            new Pair(-1,-1),
-            new Pair(-1,0),
-            new Pair(-1,1)
-    };
+
     private byte currentDirection = Snake.NORTH;
 
     private final NeuralNetwork neuralNetwork;
@@ -35,12 +28,40 @@ public class AiInput implements InputSystem {
         // TODO: FINISH!
         Matrix inputVector = calcInputVector(snake);
         int prediction = neuralNetwork.predict(inputVector);
-        return (byte) prediction;
+
+        /*
+        prediction = 0  -> stay at the same direction
+        prediction = 1  -> turn right
+        prediction = 2  -> turn left
+         */
+        if (prediction == 1)
+            currentDirection = rotate(currentDirection, true);
+        else if (prediction == 2)
+            currentDirection = rotate(currentDirection, false);
+        return currentDirection;
     }
 
-    // TODO: continue... calculate more inputs!
+    private byte rotate(byte direction, boolean right){
+        if (right){
+            switch (direction){
+                case Snake.NORTH: return Snake.EAST;
+                case Snake.EAST: return Snake.SOUTH;
+                case Snake.SOUTH: return Snake.WEST;
+                case Snake.WEST: return Snake.NORTH;
+            }
+        }
+        return switch (direction) {
+            case Snake.NORTH -> Snake.WEST;
+            case Snake.EAST -> Snake.NORTH;
+            case Snake.SOUTH -> Snake.EAST;
+            case Snake.WEST -> Snake.SOUTH;
+            default -> throw new IllegalStateException("Unexpected value: " + direction);
+        };
+    }
+
     private Matrix calcInputVector(Snake snake){
-        Matrix inputVector = new Matrix(25, 1);
+        Matrix inputVector = new Matrix(Evolution.inputSize, 1);
+        int index = 0;
 
         Pair foodPos = snake.getFoodPos();
         Pair headPos = snake.getHeadPos();
@@ -62,9 +83,11 @@ public class AiInput implements InputSystem {
         for (int i = 0; i < 8; i++) {  // ALL_DIRECTIONS length
             Pair direction = ALL_DIRECTIONS[(i + startDirection) % ALL_DIRECTIONS.length];
             if (isPointOnVector(foodPos, headPos, direction))
-                inputVector.setXY(i, 0, 1);
+                inputVector.setXY(index, 0, 1);
             else
-                inputVector.setXY(i, 0, 0);
+                inputVector.setXY(index, 0, 0);
+
+            index++;
         }
 
         /*
@@ -73,10 +96,18 @@ public class AiInput implements InputSystem {
         Pair directionVector = ALL_DIRECTIONS[startDirection];  // the direction-vector which the snake currently looks to
         Pair foodTranslation = new Pair(foodPos.x - headPos.x, foodPos.y - headPos.y);  // redefine the origin to be the snake's head position
         double angle = directionVector.angle(foodTranslation);
-        inputVector.setXY(9, 0, angle);
+        inputVector.setXY(index, 0, angle);
+        index++;
 
-
-
+        /*
+        The next 8 values will be 8-direction distance from obstacles:
+        In rotations of 45 degrees, starting with the snake current direction.
+         */
+        for (int i = 0; i < 8; i++) {
+            Pair direction = ALL_DIRECTIONS[(i + startDirection) % ALL_DIRECTIONS.length];
+            inputVector.setXY(index, 0, distanceFromObstacle(snake, direction));
+            index++;
+        }
         return inputVector;
     }
 
@@ -102,6 +133,25 @@ public class AiInput implements InputSystem {
         // point - origin = (0, 0)
         return true;
     }
+
+    /**
+     * @return The distance from the head of the snake to the closest obstacle in the given direction.
+     */
+    private int distanceFromObstacle(Snake snake, Pair directionVector){
+        Pair pos = snake.getHeadPos();
+        HashSet<Pair> emptySpace = snake.getEmptySpace();
+
+        int dist = 0;
+        // if pos is out of the board bounds it will not longer be in the emptySpace set
+        while (emptySpace.contains(pos)){
+            dist++;
+            pos.x += directionVector.x;
+            pos.y += directionVector.y;
+        }
+
+        return dist;
+    }
+
 
     @Override
     public HashSet<Byte> getInputs(Snake snake) {

@@ -1,3 +1,5 @@
+package Main;
+
 import Game.GraphicSystem;
 import Game.InputSystem;
 import Game.Pair;

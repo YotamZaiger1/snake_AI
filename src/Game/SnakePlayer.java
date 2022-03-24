@@ -5,9 +5,22 @@ import java.util.concurrent.TimeUnit;
 
 public class SnakePlayer implements Runnable {
     final long milliDelay;
-    Snake snake;
+    public Snake snake;  // TODO: fix access modifier
     InputSystem inputSystem;
     GraphicSystem graphicSystem;
+    int fitness = 0;
+
+    public SnakePlayer(int sizeX, int sizeY, long milliDelay, InputSystem inputSystem) {
+        this(new Snake(sizeX, sizeY), milliDelay, inputSystem);
+    }
+
+    public SnakePlayer(Snake snake, long milliDelay, InputSystem inputSystem){
+        this.snake = snake;
+        if (milliDelay < 0) milliDelay = 0;
+        this.milliDelay = milliDelay;
+        this.inputSystem = inputSystem;
+        this.graphicSystem = new noGraphics();
+    }
 
     public SnakePlayer(int sizeX, int sizeY, long milliDelay, InputSystem inputSystem, GraphicSystem graphicSystem) {
         this(new Snake(sizeX, sizeY), milliDelay, inputSystem, graphicSystem);
@@ -52,6 +65,25 @@ public class SnakePlayer implements Runnable {
             }
 
         }
+
+        fitness = calcFitness();
     }
 
+    private int calcFitness() {
+        //fitness is based on length and lifetime
+        int size = snake.getSize();
+        int turnsAlive = snake.getTurnsAlive();
+        if (size < 10)
+            return (int) (turnsAlive * turnsAlive * Math.pow(2, size));
+
+        //grows slower after 10 to stop fitness from getting stupidly big
+        int fitness = turnsAlive * turnsAlive;
+        fitness *= Math.pow(2, 10);
+        fitness *= size - 9;
+        return fitness;
+    }
+
+    public int getFitness() {
+        return fitness;
+    }
 }

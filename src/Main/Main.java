@@ -1,3 +1,5 @@
+package Main;
+
 import AI.Matrix;
 import AI.NeuralNetwork;
 import Game.SnakePlayer;

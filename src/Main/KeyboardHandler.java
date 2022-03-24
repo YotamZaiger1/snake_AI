@@ -1,3 +1,5 @@
+package Main;
+
 import Game.InputSystem;
 import Game.Snake;
 

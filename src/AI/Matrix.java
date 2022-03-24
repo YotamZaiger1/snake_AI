@@ -1,5 +1,7 @@
 package AI;
 
+import Main.Utils;
+
 public class Matrix {
     public final int rows;
     public final int cols;
@@ -102,6 +104,16 @@ public class Matrix {
         }
 
         return result;
+    }
+
+    public void mutate(double mutationRate, double mutationStrength){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (Math.random() <= mutationRate){
+                    values[i][j] += Utils.randGaussian() * mutationStrength;
+                }
+            }
+        }
     }
 
     @Override

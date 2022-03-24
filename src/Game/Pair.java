@@ -11,18 +11,6 @@ public class Pair {
         this.y = y;
     }
 
-    public Pair clone(){
-        return new Pair(x, y);
-    }
-
-    public String toString(){
-        return "(" + x + ", " + y + ")";
-    }
-
-    public boolean equals(int x, int y){
-        return this.x == x && this.y == y;
-    }
-
     public int dotProd(Pair o){
         return this.x * o.x + this.y + o.y;
     }
@@ -34,6 +22,18 @@ public class Pair {
         double norm = Math.sqrt(this.dotProd(this) * o.dotProd(o));
         double cosAngle = ((double) this.dotProd(o)) / norm;
         return Math.acos(cosAngle);
+    }
+
+    public Pair clone(){
+        return new Pair(x, y);
+    }
+
+    public String toString(){
+        return "(" + x + ", " + y + ")";
+    }
+
+    public boolean equals(int x, int y){
+        return this.x == x && this.y == y;
     }
 
     @Override
