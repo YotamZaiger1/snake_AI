@@ -106,14 +106,16 @@ public class Matrix {
         return result;
     }
 
-    public void mutate(double mutationRate, double mutationStrength){
+    public Matrix mutated(double mutationRate, double mutationStrength){
+        Matrix mutation = new Matrix(this.rows, this.cols);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if (Math.random() <= mutationRate){
-                    values[i][j] += Utils.randGaussian() * mutationStrength;
+                if (Math.random() < mutationRate){
+                    mutation.values[i][j] = this.values[i][j] + Utils.randGaussian() * mutationStrength;
                 }
             }
         }
+        return mutation;
     }
 
     @Override

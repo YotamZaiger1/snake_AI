@@ -15,10 +15,6 @@ public class NeuralNetwork {
         this.layerSizes = layerSizes;
         this.wights = new Matrix[layerSizes.length - 1];
         this.biases = new Matrix[layerSizes.length - 1];
-        for (int i = 0; i < layerSizes.length - 1; i++) {
-            this.wights[i] = Matrix.randomMatrix(layerSizes[i + 1], layerSizes[i]);
-            this.biases[i] = Matrix.randomMatrix(layerSizes[i], 1);
-        }
         this.outputVector = new Matrix(layerSizes[layerSizes.length - 1], 1);
     }
 
@@ -53,6 +49,9 @@ public class NeuralNetwork {
     public int predict(Matrix inputVector){
         // TODO: check if works
         for (int i = 0; i < wights.length; i++) {
+            if (biases[i] == null){
+                System.out.println("hi");
+            }
             inputVector = inputVector.plus(biases[i]);
 
             Matrix wight = wights[i];
@@ -74,11 +73,13 @@ public class NeuralNetwork {
         return maxIndex;
     }
 
-    public void mutate(double mutationRate, double mutationStrength){
+    public NeuralNetwork mutated(double mutationRate, double mutationStrength){
+        NeuralNetwork mutation = new NeuralNetwork(this.layerSizes);
         for (int i = 0; i < wights.length; i++) {
-            wights[i].mutate(mutationRate, mutationStrength);
-            biases[i].mutate(mutationRate, mutationStrength);
+            mutation.wights[i] = wights[i].mutated(mutationRate, mutationStrength);
+            mutation.biases[i] = biases[i].mutated(mutationRate, mutationStrength);
         }
+        return mutation;
     }
 
     /**
@@ -91,9 +92,27 @@ public class NeuralNetwork {
         NeuralNetwork[] population = new NeuralNetwork[populationSize];
         for (int i = 0; i < populationSize; i++) {
             NeuralNetwork agent = new NeuralNetwork(layerSizes);
+            for (int j = 0; j < layerSizes.length - 1; j++) {
+                agent.wights[j] = Matrix.randomMatrix(layerSizes[j + 1], layerSizes[j]);
+                agent.biases[j] = Matrix.randomMatrix(layerSizes[j], 1);
+            }
             population[i] = agent;
         }
         return population;
+    }
+
+    public NeuralNetwork clone(){
+        NeuralNetwork clone = new NeuralNetwork(this.layerSizes);
+        for (int i = 0; i < this.wights.length; i++) {
+            clone.wights[i] = this.wights[i].clone();
+            clone.biases[i] = this.biases[i].clone();
+        }
+        for (Matrix bias: clone.biases) {
+            if (bias == null) {
+                System.out.println("null bias");
+            }
+        }
+        return clone;
     }
 
     @Override

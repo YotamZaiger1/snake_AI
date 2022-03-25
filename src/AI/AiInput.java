@@ -25,7 +25,6 @@ public class AiInput implements InputSystem {
 
     @Override
     public byte getDirection(Snake snake) {
-        // TODO: FINISH!
         Matrix inputVector = calcInputVector(snake);
         int prediction = neuralNetwork.predict(inputVector);
 
@@ -155,7 +154,7 @@ public class AiInput implements InputSystem {
 
     @Override
     public HashSet<Byte> getInputs(Snake snake) {
-        if (snake.getTurnsAlive() > turnsToLive){
+        if (snake.getTurnsAlive() > turnsToLive || !snake.getIsAlive()){
             HashSet<Byte> exit = new HashSet<>();
             exit.add(EXIT);
             return exit;

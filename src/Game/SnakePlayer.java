@@ -14,7 +14,7 @@ public class SnakePlayer implements Runnable {
         this(new Snake(sizeX, sizeY), milliDelay, inputSystem);
     }
 
-    public SnakePlayer(Snake snake, long milliDelay, InputSystem inputSystem){
+    public SnakePlayer(Snake snake, long milliDelay, InputSystem inputSystem) {
         this.snake = snake;
         if (milliDelay < 0) milliDelay = 0;
         this.milliDelay = milliDelay;
@@ -36,6 +36,10 @@ public class SnakePlayer implements Runnable {
 
     @Override
     public void run() {
+        play();
+    }
+
+    public void play() {
         graphicSystem.setSnake(snake);
         graphicSystem.initialize();
         while (snake.getIsAlive()) {
