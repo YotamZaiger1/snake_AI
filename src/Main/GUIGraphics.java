@@ -18,14 +18,27 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     private Thread gameThread;
     private Snake gameSnake;
     private Pair tileSize;
+    private final boolean closeOnSnakeDeath;
     private final JFrame window = new JFrame();
 
     private final InputSystem inputSystem;
 
+    public GUIGraphics(int screenWidth, int screenHeight){
+        this(screenWidth, screenHeight, new KeyboardHandler());
+    }
 
-    public GUIGraphics(int screenWidth, int screenHeight, InputSystem inputSystem) {
+    public GUIGraphics(int screenWidth, int screenHeight, InputSystem inputSystem){
+        this(screenWidth, screenHeight, inputSystem, false);
+    }
+
+    public GUIGraphics(int screenWidth, int screenHeight, boolean closeOnSnakeDeath){
+        this(screenWidth, screenHeight, new KeyboardHandler(), closeOnSnakeDeath);
+    }
+
+    public GUIGraphics(int screenWidth, int screenHeight, InputSystem inputSystem, boolean closeOnSnakeDeath) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.closeOnSnakeDeath = closeOnSnakeDeath;
 
         this.inputSystem = inputSystem;
         // initiate the KeyListener if exist
@@ -49,6 +62,10 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     public void run() {
         while (gameThread != null) {
             repaint();  // calls the paintComponent function
+            if (!gameSnake.getIsAlive() && closeOnSnakeDeath) {
+                this.window.dispose();
+                break;
+            }
         }
     }
 

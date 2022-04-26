@@ -2,11 +2,13 @@ package AI;
 
 import Main.Utils;
 
+import java.util.Arrays;
+
 public class Matrix {
     public final int rows;
     public final int cols;
 
-    private final double[][] values;
+    public final double[][] values;
 
     public Matrix(int rows, int cols) {
         if (rows < 0 || cols < 0) {
@@ -128,6 +130,19 @@ public class Matrix {
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Matrix matrix = (Matrix) o;
+        return Arrays.deepEquals(values, matrix.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(values);
     }
 
     public Matrix clone(){

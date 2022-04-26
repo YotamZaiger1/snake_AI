@@ -1,7 +1,10 @@
 package AI;
 
+import java.io.*;
+import java.util.Arrays;
+
 public class NeuralNetwork {
-    private final Matrix[] wights;
+    private final Matrix[] weights;
     private final Matrix[] biases;
     private final int[] layerSizes;
 
@@ -13,33 +16,38 @@ public class NeuralNetwork {
         }
 
         this.layerSizes = layerSizes;
-        this.wights = new Matrix[layerSizes.length - 1];
+        this.weights = new Matrix[layerSizes.length - 1];
         this.biases = new Matrix[layerSizes.length - 1];
+        for (int i = 0; i < weights.length; i++) {
+            this.weights[i] = new Matrix(layerSizes[i+1], layerSizes[i]);
+            this.biases[i] = new Matrix(layerSizes[i], 1);
+        }
         this.outputVector = new Matrix(layerSizes[layerSizes.length - 1], 1);
     }
 
-    public NeuralNetwork(Matrix[] wights, Matrix[] biases){
-        if (wights == null || wights.length == 0 || biases == null || biases.length != wights.length) {
+    public NeuralNetwork(Matrix[] weights, Matrix[] biases){
+        if (weights == null || weights.length == 0 || biases == null || biases.length != weights.length) {
             throw new RuntimeException("Wights must contain at least 1 matrix. And biases must match wights length.");
         }
 
-        this.wights = wights;
+        this.weights = weights;
         this.biases = biases;
-        this.layerSizes = new int[wights.length + 1];
-        this.layerSizes[0] = wights[0].cols;
+        this.layerSizes = new int[weights.length + 1];
+        this.layerSizes[0] = weights[0].cols;
 
-        for (int i = 1; i < wights.length + 1; i++) {
-            if (i != wights.length && wights[i - 1].rows != wights[i].cols) {
+        for (int i = 1; i < weights.length + 1; i++) {
+            if (i != weights.length && weights[i - 1].rows != weights[i].cols) {
                 throw new RuntimeException("Matrices sizes do not match.");
             }
-            this.layerSizes[i] = wights[i - 1].rows;
+            this.layerSizes[i] = weights[i - 1].rows;
         }
         this.outputVector = new Matrix(layerSizes[layerSizes.length - 1], 1);
     }
 
     private double activationFunction(double x){
-        if (x < 0) return 0d;
-        return x;
+        // sigmoid function
+        double ex = Math.exp(x);
+        return ex / (ex + 1);
     }
 
     /**
@@ -47,14 +55,10 @@ public class NeuralNetwork {
      * Also the output-vector is being stored at {@code this.outputVector}.
      */
     public int predict(Matrix inputVector){
-        // TODO: check if works
-        for (int i = 0; i < wights.length; i++) {
-            if (biases[i] == null){
-                System.out.println("hi");
-            }
+        for (int i = 0; i < weights.length; i++) {
             inputVector = inputVector.plus(biases[i]);
 
-            Matrix wight = wights[i];
+            Matrix wight = weights[i];
             inputVector = wight.mul(inputVector);
             for (int j = 0; j < inputVector.cols; j++) {
                 inputVector.setXY(j, 0, activationFunction(inputVector.getXY(j, 0)));
@@ -75,8 +79,8 @@ public class NeuralNetwork {
 
     public NeuralNetwork mutated(double mutationRate, double mutationStrength){
         NeuralNetwork mutation = new NeuralNetwork(this.layerSizes);
-        for (int i = 0; i < wights.length; i++) {
-            mutation.wights[i] = wights[i].mutated(mutationRate, mutationStrength);
+        for (int i = 0; i < weights.length; i++) {
+            mutation.weights[i] = weights[i].mutated(mutationRate, mutationStrength);
             mutation.biases[i] = biases[i].mutated(mutationRate, mutationStrength);
         }
         return mutation;
@@ -93,7 +97,7 @@ public class NeuralNetwork {
         for (int i = 0; i < populationSize; i++) {
             NeuralNetwork agent = new NeuralNetwork(layerSizes);
             for (int j = 0; j < layerSizes.length - 1; j++) {
-                agent.wights[j] = Matrix.randomMatrix(layerSizes[j + 1], layerSizes[j]);
+                agent.weights[j] = Matrix.randomMatrix(layerSizes[j + 1], layerSizes[j]);
                 agent.biases[j] = Matrix.randomMatrix(layerSizes[j], 1);
             }
             population[i] = agent;
@@ -101,16 +105,52 @@ public class NeuralNetwork {
         return population;
     }
 
+    public static void saveNetwork(NeuralNetwork network, String fileName) throws IOException {
+        double[][][] allWeights = new double[network.weights.length][][];
+        double[][][] allBiases = new double[network.weights.length][][];
+
+        for (int i = 0; i < network.weights.length; i++) {
+            allWeights[i] = network.weights[i].values;
+            allBiases[i] = network.biases[i].values;
+        }
+
+        double[][][][] data = new double[][][][] {allWeights, allBiases};
+
+        FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(data);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+    }
+
+    public static NeuralNetwork loadNetwork(String fileName) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(fileName);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        double[][][][] data = (double[][][][]) objectInputStream.readObject();
+        objectInputStream.close();
+
+        double[][][] allWeights = data[0];
+        double[][][] allBiases = data[1];
+        Matrix[] weights = new Matrix[allWeights.length];
+        Matrix[] biases = new Matrix[allWeights.length];
+
+        if (allWeights.length != allBiases.length)
+            throw new RuntimeException("Sizes do not match.");
+
+        for (int i = 0; i < allWeights.length; i++) {
+            weights[i] = new Matrix(allWeights[i]);
+            biases[i] = new Matrix(allBiases[i]);
+        }
+
+        return new NeuralNetwork(weights, biases);
+    }
+
+
     public NeuralNetwork clone(){
         NeuralNetwork clone = new NeuralNetwork(this.layerSizes);
-        for (int i = 0; i < this.wights.length; i++) {
-            clone.wights[i] = this.wights[i].clone();
+        for (int i = 0; i < this.weights.length; i++) {
+            clone.weights[i] = this.weights[i].clone();
             clone.biases[i] = this.biases[i].clone();
-        }
-        for (Matrix bias: clone.biases) {
-            if (bias == null) {
-                System.out.println("null bias");
-            }
         }
         return clone;
     }
@@ -118,14 +158,29 @@ public class NeuralNetwork {
     @Override
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        for (Matrix matrix: wights) {
+        for (Matrix matrix: weights) {
             stringBuilder.append(matrix.toString()).append("\n\n");
         }
         return stringBuilder.toString();
     }
 
-    public Matrix[] getWights() {
-        return wights.clone();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NeuralNetwork network = (NeuralNetwork) o;
+        return Arrays.equals(weights, network.weights) && Arrays.equals(biases, network.biases);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(weights);
+        result = 31 * result + Arrays.hashCode(biases);
+        return result;
+    }
+
+    public Matrix[] getWeights() {
+        return weights.clone();
     }
 
     public Matrix getOutputVector() {

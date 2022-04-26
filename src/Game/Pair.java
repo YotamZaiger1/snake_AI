@@ -12,7 +12,7 @@ public class Pair {
     }
 
     public int dotProd(Pair o){
-        return this.x * o.x + this.y + o.y;
+        return this.x * o.x + this.y * o.y;
     }
 
     /**
@@ -20,6 +20,9 @@ public class Pair {
      */
     public double angle(Pair o){
         double norm = Math.sqrt(this.dotProd(this) * o.dotProd(o));
+        if (norm == 0)
+            return Math.PI / 2;
+
         double cosAngle = ((double) this.dotProd(o)) / norm;
         return Math.acos(cosAngle);
     }

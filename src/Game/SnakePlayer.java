@@ -3,7 +3,7 @@ package Game;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
-public class SnakePlayer implements Runnable {
+public class SnakePlayer {
     final long milliDelay;
     public Snake snake;  // TODO: fix access modifier
     InputSystem inputSystem;
@@ -34,18 +34,16 @@ public class SnakePlayer implements Runnable {
         this.graphicSystem = graphicSystem;
     }
 
-    @Override
-    public void run() {
-        play();
-    }
-
     public void play() {
         graphicSystem.setSnake(snake);
         graphicSystem.initialize();
         while (snake.getIsAlive()) {
             HashSet<Byte> inputs = inputSystem.getInputs(snake);
             if (inputs != null) {
-                if (inputs.contains(InputSystem.EXIT)) break;
+                if (inputs.contains(InputSystem.EXIT)) {
+                    snake.isAlive = false;
+                    break;
+                }
 
                 if (inputs.contains(InputSystem.HELP)) inputSystem.printHelpMessage();
                 if (inputs.contains(InputSystem.RESET)) {
@@ -64,8 +62,7 @@ public class SnakePlayer implements Runnable {
             if (milliDelay > 0) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(milliDelay);
-                } catch (InterruptedException ignored) {
-                }
+                } catch (InterruptedException ignored) {}
             }
 
         }
@@ -74,13 +71,13 @@ public class SnakePlayer implements Runnable {
     }
 
     private int calcFitness() {
-        //fitness is based on length and lifetime
+        // fitness is based on length and lifetime
         int size = snake.getSize();
         int turnsAlive = snake.getTurnsAlive();
         if (size < 10)
             return (int) (turnsAlive * turnsAlive * Math.pow(2, size));
 
-        //grows slower after 10 to stop fitness from getting stupidly big
+        // grows slower after 10 to stop fitness from getting stupidly big
         int fitness = turnsAlive * turnsAlive;
         fitness *= Math.pow(2, 10);
         fitness *= size - 9;
