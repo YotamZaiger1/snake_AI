@@ -8,6 +8,16 @@ import java.util.Random;
 
 public class Utils {
     static private final Random random = new Random();
+    public static final Pair[] ALL_DIRECTIONS = new Pair[]{
+            new Pair(0, 1),
+            new Pair(1, 1),
+            new Pair(1, 0),
+            new Pair(1, -1),
+            new Pair(0, -1),
+            new Pair(-1, -1),
+            new Pair(-1, 0),
+            new Pair(-1, 1)
+    };
 
     public static Pair randomChoice(HashSet<Pair> pairs){
         if (pairs == null) return null;
@@ -23,7 +33,7 @@ public class Utils {
     }
 
     /**
-     * Checks if a given point seats on the line that made by a direction vector and started at {@code origin}.
+     * Checks if a given point seats on the line that made by a direction vector and starts at {@code origin}.
      */
     public static boolean isPointOnVector(Pair point, Pair origin, Pair directionVector) {
         float pointX = point.x - origin.x;
@@ -48,6 +58,12 @@ public class Utils {
         return true;
     }
 
+    /**
+     * Rotate a direction right or left.
+     * @param direction One of the {@code Snake} constant directions.
+     * @param right Whether to rotate the direction right or left.
+     * @return The rotated direction in the specified turn.
+     */
     public static byte rotate(byte direction, boolean right) {
         if (right)
             return switch (direction) {

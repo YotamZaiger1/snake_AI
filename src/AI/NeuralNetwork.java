@@ -44,6 +44,10 @@ public class NeuralNetwork {
         this.outputVector = new Matrix(layerSizes[layerSizes.length - 1], 1);
     }
 
+    /**
+     * The activation function used in the {@code predict} function to normalize the outputs.
+     * @return The sigmoid of the given number.
+     */
     private double activationFunction(double x){
         // sigmoid function
         double ex = Math.exp(x);
@@ -77,6 +81,11 @@ public class NeuralNetwork {
         return maxIndex;
     }
 
+    /**
+     * @param mutationRate The probability that one of the weights will change.
+     * @param mutationStrength The strength of the change on the changed weights.
+     * @return A new mutation of this neural network.
+     */
     public NeuralNetwork mutated(double mutationRate, double mutationStrength){
         NeuralNetwork mutation = new NeuralNetwork(this.layerSizes);
         for (int i = 0; i < weights.length; i++) {
@@ -105,6 +114,12 @@ public class NeuralNetwork {
         return population;
     }
 
+    /**
+     * Save a given network to a file.
+     * @param network The network to save.
+     * @param fileName The path and name of the file to save the network in.
+     * @throws IOException Caused by {@code FileOutputStream}.
+     */
     public static void saveNetwork(NeuralNetwork network, String fileName) throws IOException {
         double[][][] allWeights = new double[network.weights.length][][];
         double[][][] allBiases = new double[network.weights.length][][];
@@ -123,6 +138,13 @@ public class NeuralNetwork {
         objectOutputStream.close();
     }
 
+    /**
+     * Load a network that was saved in a file using the {@code saveNetwork} function.
+     * @param fileName The path and name of the file the network is stored in.
+     * @return A new {@code NeuralNetwork} instance with the data that was in the file.
+     * @throws IOException Caused by {@code FileInputStream} and {@code ObjectInputStream}.
+     * @throws ClassNotFoundException Caused by {@code objectInputStream.readObject()}.
+     */
     public static NeuralNetwork loadNetwork(String fileName) throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(fileName);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);

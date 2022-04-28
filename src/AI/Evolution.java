@@ -1,7 +1,6 @@
 package AI;
 
 import Game.GraphicSystem;
-import Game.Pair;
 import Game.SnakePlayer;
 import Main.GUIGraphics;
 
@@ -10,27 +9,17 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class Evolution {
-    public static final double mutationRate = 0.5;
-    public static final double mutationStrength = 0.5;
-    public static final int populationSize = 20000;
+    public static final double mutationRate = 0.4;
+    public static final double mutationStrength = 0.4;
+    public static final int populationSize = 2_000;
     public static final int copiesOfLastBest = 10;
-    public static final int takeTop = 100;
+    public static final int takeTop = 10;
     public static final int stupidPopulationSize = populationSize / 4; // number of new random agents that added in each generation
     public static final int turnsToLive = 300;
     public static final int boardSizeX = 20;
     public static final int boardSizeY = 20;
     public static final int trainBoardSizeX = 20;
     public static final int trainBoardSizeY = 20;
-    public static final Pair[] ALL_DIRECTIONS = new Pair[]{
-            new Pair(0, 1),
-            new Pair(1, 1),
-            new Pair(1, 0),
-            new Pair(1, -1),
-            new Pair(0, -1),
-            new Pair(-1, -1),
-            new Pair(-1, 0),
-            new Pair(-1, 1)
-    };
     final static int inputSize = AiInput.inputSize;
     final static int outputSize = 3;
     final static int[] layerSizes = new int[]{inputSize, 16, 16, outputSize};
@@ -98,5 +87,18 @@ public class Evolution {
         }
     }
 
+
+    public static void playAIFromFile(String fileName) throws IOException, ClassNotFoundException {
+        playAIFromFile(fileName, 500, 500, 70);
+    }
+
+    public static void playAIFromFile(String fileName, int screenWidth, int screenHeight, long milliDelay) throws IOException, ClassNotFoundException {
+        NeuralNetwork neuralNetwork = NeuralNetwork.loadNetwork(fileName);
+        AiInput input = new AiInput(neuralNetwork, Integer.MAX_VALUE);
+        GraphicSystem graphicSystem = new GUIGraphics(screenWidth, screenHeight, null, false);
+
+        SnakePlayer snakePlayer = new SnakePlayer(boardSizeX, boardSizeY, milliDelay, input, graphicSystem);
+        snakePlayer.play();
+    }
 
 }

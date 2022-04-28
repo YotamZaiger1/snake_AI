@@ -7,7 +7,7 @@ import Main.Utils;
 
 import java.util.HashSet;
 
-import static AI.Evolution.ALL_DIRECTIONS;
+import static Main.Utils.ALL_DIRECTIONS;
 
 public class AiInput implements InputSystem {
     public final static int inputSize = 8 + 1 + 8 + 8;

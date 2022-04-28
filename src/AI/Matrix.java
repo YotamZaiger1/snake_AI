@@ -30,10 +30,16 @@ public class Matrix {
         }
     }
 
+    /**
+     * Assert that the matrices have valid dimensions for adding them together.
+     */
     public static void assertDimensionsAdd(Matrix A, Matrix B){
         if (A.rows != B.rows || A.cols != B.cols) throw new RuntimeException("Invalid dimensions.");
     }
 
+    /**
+     * Assert that the matrices have valid dimensions for multiplying {@code A} by {@code B}.
+     */
     public static void assertDimensionsMul(Matrix A, Matrix B){
         if (A.cols != B.rows) throw new RuntimeException("Invalid dimensions.");
     }

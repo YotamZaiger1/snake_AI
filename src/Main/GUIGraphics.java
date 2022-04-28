@@ -103,12 +103,12 @@ public class GUIGraphics extends JPanel implements Runnable, GraphicSystem {
     private void drawGrid(Graphics2D g2D, int boardWidth, int boardHeight){
         g2D.setColor(Color.DARK_GRAY);
         // cols
-        for (int i = 0; i < boardWidth; i++) {
+        for (int i = 0; i < boardWidth + 1; i++) {
             int x = i * tileSize.x;
             g2D.drawLine(x, 0, x, screenHeight);
         }
         // rows
-        for (int i = 0; i < boardHeight; i++) {
+        for (int i = 0; i < boardHeight + 1; i++) {
             int y = i * tileSize.y;
             g2D.drawLine(0, y, screenWidth, y);
         }
